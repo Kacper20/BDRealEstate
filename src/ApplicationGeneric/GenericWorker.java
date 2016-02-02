@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by kacper on 02.02.2016.
@@ -19,13 +20,14 @@ public class GenericWorker {
         this.c = c;
     }
 
-    public Collection<TableColumn> getColumnsForTableName(String tableName) throws SQLException {
+    public List<TableColumnName> getColumnsForTableName(String tableName) throws SQLException {
 
         PreparedStatement ps = c.prepareStatement("SELECT * FROM information_schema.columns WHERE table_name  = ?");
+        ps.setString(1, tableName);
         ResultSet rs = ps.executeQuery();
-        Collection <TableColumn> collection = new ArrayList<>();
+        List <TableColumnName> collection = new ArrayList<>();
         while (rs.next()) {
-            collection.add(new TableColumn(rs));
+            collection.add(new TableColumnName(rs));
         }
         rs.close();
         ps.close();
@@ -47,6 +49,17 @@ public class GenericWorker {
         rs.close();
         ps.close();
         return collection;
+    }
+    public ResultSet selectGeneralSQL(String tableName) throws SQLException {
+        PreparedStatement ps;
+        System.out.println(tableName);
+        String stringQuery = String.format("SELECT * FROM %s;", tableName);
+
+        ps = c.prepareStatement(stringQuery);
+        ResultSet rs =  ps.executeQuery();
+
+        int i = 0;
+        return rs;
     }
 
 
