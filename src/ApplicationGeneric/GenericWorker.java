@@ -15,7 +15,8 @@ import java.util.Collection;
 public class GenericWorker {
     Connection c;
     public GenericWorker() throws SQLException {
-        c = ConnectionManager.getInstance().getConn();
+        Connection c = ConnectionManager.getInstance().getConn();
+        this.c = c;
     }
 
     public Collection<TableColumn> getColumnsForTableName(String tableName) throws SQLException {
@@ -34,9 +35,10 @@ public class GenericWorker {
 
     public Collection<TableName>  getTableNames() throws SQLException {
 
-        PreparedStatement ps = c.prepareStatement("SELECT table_name" +
-                "FROM information_schema.tables" +
-                "ORDER BY table_schema,table_name;");
+        PreparedStatement ps;
+        ps = c.prepareStatement("SELECT table_name FROM information_schema.tables " +
+                "WHERE table_schema = 'public'\n" +
+                "AND table_type='BASE TABLE'");
         ResultSet rs = ps.executeQuery();
         Collection <TableName> collection = new ArrayList<>();
         while (rs.next()) {
