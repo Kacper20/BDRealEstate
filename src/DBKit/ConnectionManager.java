@@ -1,3 +1,5 @@
+package DBKit;
+
 import org.postgresql.Driver;
 
 import java.sql.Connection;
@@ -9,8 +11,10 @@ import java.sql.SQLException;
  */
 public class ConnectionManager {
 
+
     private static ConnectionManager instance;
     private Connection conn;
+
 
     private String username = "kacper";
     private String password = "kacper";
@@ -20,7 +24,6 @@ public class ConnectionManager {
         if (instance == null) instance = new ConnectionManager();
         return instance;
     }
-
     private ConnectionManager() throws SQLException {
         DriverManager.registerDriver(new Driver());
     }
