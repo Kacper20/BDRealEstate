@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="dataSourceStorageLocal">
+    <data-source name="PostgreSQL - bdbase@localhost" uuid="3e8263cd-c217-416d-9c33-425ff6c3be3e">
+      <secret-storage>master_key</secret-storage>
+      <user-name>kacper</user-name>
+      <schema-pattern>bdbase.pg_catalog bdbase.public</schema-pattern>
+      <default-schemas>bdbase.public</default-schemas>
+    </data-source>
+  </component>
+</project>
