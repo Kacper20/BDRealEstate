@@ -1,6 +1,7 @@
 package ApplicationGeneric;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * Created by kacper on 02.02.2016.
@@ -11,8 +12,8 @@ public class TableColumn {
 
 
 
-    public TableColumn(ResultSet rs) {
-
+    public TableColumn(ResultSet rs) throws SQLException {
+        this.columnName = rs.getString("columnName");
     }
 
 

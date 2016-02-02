@@ -14,6 +14,10 @@ public class AgentDTO {
     private String PESEL;
 
 
+
+
+
+
     public AgentDTO(ResultSet rs) throws SQLException {
         this.id = rs.getInt("id");
         this.imie = rs.getString("imie");
