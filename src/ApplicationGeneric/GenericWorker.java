@@ -94,6 +94,11 @@ public class GenericWorker {
         ps.execute();
         ps.close();
     }
+    public void deleteFromDatabase(String deleteQuery) throws SQLException {
+        PreparedStatement ps = c.prepareStatement(deleteQuery);
+        ps.execute();
+        ps.close();
+    }
 
 
 }

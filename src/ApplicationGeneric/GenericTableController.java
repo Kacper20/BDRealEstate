@@ -2,7 +2,6 @@ package ApplicationGeneric;
 
 import DBKit.ConnectionManager;
 import DBKit.SQLQuery;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -18,13 +17,11 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -114,24 +111,11 @@ public class GenericTableController {
             tableColumn.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<ObservableList, String>>() {
                 @Override
                 public void handle(TableColumn.CellEditEvent<ObservableList, String> event) {
-//
+
                     ObservableList<TableColumn<ObservableList, ?>> columns = event.getTableView().getColumns();
-
-                    ObservableList<String> observableList = event.getRowValue();
-
-                    Map<String, String> primaryKeysMap = new HashMap<String, String>();
-
-                    for (TableColumnName primaryColumn: primaryColumnsList) {
-                        for (int k = 0; k < columns.size(); k++) {
-                            TableColumn<ObservableList, ?> observableListTableColumn = columns.get(k);
-                            if (observableListTableColumn.getText().equals(primaryColumn.getColumnName())) {
-                                primaryKeysMap.put(primaryColumn.getColumnName(), observableList.get(k));
-                                break;
-                            }
-                        }
-                    }
+                    ObservableList<String> rowValues = event.getRowValue();
+                    Map <String, String> primaryKeysMap = getMappedConditionValues(primaryColumnsList, rowValues, columns);
                     Map<String, String> updatedValuesMap = new HashMap<String, String>();
-
                     //TODO: Remember about types, add '' where necessary - REALLY IMPORTANT!!
                     TableColumn edited = event.getTableColumn();
                     String newValue = (String)event.getNewValue();
@@ -143,12 +127,9 @@ public class GenericTableController {
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
-
-
                 }
             });
 
-            
 
             genericTableView.getColumns().addAll(tableColumn);
         }
@@ -168,7 +149,21 @@ public class GenericTableController {
                                 super.updateItem( item, empty );
                                 if (!empty) {
                                     btn.setOnAction( ( ActionEvent event ) -> {
-                                        String String = getTableView().getItems().get( getIndex() );
+                                        int indexOfRowToDelete = getIndex();
+
+                                        ObservableList<TableColumn<ObservableList, ?>> columns = genericTableView.getColumns();
+
+                                        ObservableList<String> rowValues = (ObservableList<String>) genericTableView.getItems().get(indexOfRowToDelete);
+                                        System.out.println(rowValues);
+                                        Map <String, String> primaryKeysForRowMap = getMappedConditionValues(primaryColumnsList, rowValues, columns);
+                                        String deleteQuery = SQLQuery.deleteSQL(tableName, primaryKeysForRowMap);
+                                        try {
+                                            dbWorker.deleteFromDatabase(deleteQuery);
+                                            refreshDataInRows(tableName);
+                                        } catch (SQLException e) {
+                                            e.printStackTrace();
+                                        }
+
 
                                     } );
                                     setGraphic( btn );
@@ -227,6 +222,22 @@ public class GenericTableController {
             data.add(row);
         }
         genericTableView.setItems(data);
+    }
+
+    public Map<String, String> getMappedConditionValues(List<TableColumnName> primaryColumnsList, ObservableList<String> observableList,
+                                                        ObservableList<TableColumn<ObservableList, ?>> columns) {
+
+        Map<String, String> primaryKeysMap = new HashMap<String, String>();
+        for (TableColumnName primaryColumn: primaryColumnsList) {
+            for (int k = 0; k < columns.size(); k++) {
+                TableColumn<ObservableList, ?> observableListTableColumn = columns.get(k);
+                if (observableListTableColumn.getText().equals(primaryColumn.getColumnName())) {
+                    primaryKeysMap.put(primaryColumn.getColumnName(), observableList.get(k));
+                    break;
+                }
+            }
+        }
+        return primaryKeysMap;
     }
     public Map<String, String> getMappedValuesFromTextFields(List<TextField> textFields) {
 

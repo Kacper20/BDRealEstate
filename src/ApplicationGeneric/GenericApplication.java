@@ -38,19 +38,6 @@ public class GenericApplication extends Application {
     }
 
     public static void main(String[] args) {
-
-        Map<String, String> columnValueMappingForSet = new HashMap<String, String>();
-        columnValueMappingForSet.put("FIRST_NAME", "'DEBOPAM'");
-        columnValueMappingForSet.put("LAST_NAME", "'PAL'");
-        columnValueMappingForSet.put("DESIGNATION", "'Software Developer'");
-        columnValueMappingForSet.put("ORGANIZATION", "'NIC'");
-
-        Map<String, String> columnValueMappingForCondition = new HashMap<String, String>();
-        columnValueMappingForCondition.put("EMPLOYEE_NO", "201400002014");
-
-// Getting UPDATE SQL Query...
-        String updateSQL = SQLQuery.updateSQL("EMPLOYEE", columnValueMappingForSet, columnValueMappingForCondition);
-
         launch(args);
     }
 }
