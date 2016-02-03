@@ -61,6 +61,12 @@ public class GenericWorker {
         int i = 0;
         return rs;
     }
+    public void insertIntoDatabase(String insertQuery) throws SQLException {
+        PreparedStatement ps = c.prepareStatement(insertQuery);
+        ps.execute();
+        ps.close();
+
+    }
 
 
 }

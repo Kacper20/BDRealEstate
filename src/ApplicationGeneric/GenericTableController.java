@@ -1,6 +1,8 @@
 package ApplicationGeneric;
 
 import DBKit.ConnectionManager;
+import DBKit.SQLQuery;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -12,6 +14,8 @@ import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -21,7 +25,9 @@ import javafx.util.Callback;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -54,6 +60,7 @@ public class GenericTableController {
 
         hBox = new HBox();
         hBox.setSpacing(5);
+        genericTableView.setEditable(true);
 
         final VBox vbox = new VBox();
         vbox.setSpacing(5);
@@ -94,14 +101,92 @@ public class GenericTableController {
             final int j = i;
             TableColumnName tcm = columnsForTableName.get(i);
             TableColumn tableColumn = new TableColumn(tcm.getColumnName());
+            tableColumn.setCellFactory(TextFieldTableCell.forTableColumn());
             tableColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<ObservableList,String>, ObservableValue<String>>() {
                 @Override
                 public ObservableValue call(TableColumn.CellDataFeatures<ObservableList, String> param) {
                     return new SimpleStringProperty(param.getValue().get(j).toString());
                 }
             });
+
+            tableColumn.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent>() {
+                @Override
+                public void handle(TableColumn.CellEditEvent event) {
+//                    String newValue = (String)event.getNewValue();
+
+                }
+            });
+
+            
+
             genericTableView.getColumns().addAll(tableColumn);
         }
+
+        //TODO: Factor it out
+        TableColumn actionCol = new TableColumn( "Action" );
+        actionCol.setCellValueFactory( new PropertyValueFactory<>( "DUMMY" ) );
+
+        Callback<TableColumn<String, String>, TableCell<String, String>> cellFactory = //
+                new Callback<TableColumn<String, String>, TableCell<String, String>>() {
+                    @Override
+                    public TableCell call( final TableColumn<String, String> param ) {
+                        final TableCell<String, String> cell = new TableCell<String, String>() {
+                            final Button btn = new Button( "Delete" );
+                            @Override
+                            public void updateItem( String item, boolean empty ) {
+                                super.updateItem( item, empty );
+                                if (!empty) {
+                                    btn.setOnAction( ( ActionEvent event ) -> {
+                                        String String = getTableView().getItems().get( getIndex() );
+
+                                    } );
+                                    setGraphic( btn );
+                                }
+                            }
+                        };
+                        return cell;
+                    }
+                };
+
+        actionCol.setCellFactory( cellFactory );
+        genericTableView.getColumns().add(actionCol);
+
+
+
+
+
+        refreshDataInRows(tableName);
+
+        List<TextField> textFields = getInsertTextFieldsForTable(columnsForTableName);
+        Button addObjectToDatabaseButton = new Button();
+        addObjectToDatabaseButton.setText("Add new object");
+        addObjectToDatabaseButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Map<String, String> mapped = getMappedValuesFromTextFields(textFields);
+                String query = SQLQuery.insertSQL(tableName, mapped);
+                try {
+                    dbWorker.insertIntoDatabase(query);
+
+                    //TODO: Do it in more efficient way - only refresh rows - set item section
+                    setupHierarchyForTableName(tableName);
+                } catch (SQLException e) {
+
+                    e.printStackTrace();
+
+                }
+
+            }
+        });
+
+        hBox.getChildren().clear();
+        hBox.getChildren().addAll(textFields);
+        hBox.getChildren().add(addObjectToDatabaseButton);
+
+
+    }
+
+    public void refreshDataInRows(String tableName) throws SQLException {
         ResultSet rs = dbWorker.selectGeneralSQL(tableName);
         while (rs.next()) {
             ObservableList<String> row = FXCollections.observableArrayList();
@@ -111,23 +196,15 @@ public class GenericTableController {
             data.add(row);
         }
         genericTableView.setItems(data);
+    }
+    public Map<String, String> getMappedValuesFromTextFields(List<TextField> textFields) {
 
-
-        List<TextField> textFields = getInsertTextFieldsForTable(columnsForTableName);
-        Button addObjectToDatabaseButton = new Button();
-        addObjectToDatabaseButton.setText("Add new object");
-        addObjectToDatabaseButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-
-            }
-        });
-
-        hBox.getChildren().clear();
-
-        hBox.getChildren().addAll(textFields);
-        hBox.getChildren().add(addObjectToDatabaseButton);
-
+        //Mapping should take into account type of the variable.
+        Map<String, String> map = new HashMap<>();
+        for (TextField txtField: textFields) {
+            map.put( txtField.getId(), txtField.getText());
+        }
+        return map;
     }
 
     public List<TextField> getInsertTextFieldsForTable(List<TableColumnName> columns) {
@@ -136,6 +213,7 @@ public class GenericTableController {
                 .map(new Function<TableColumnName, TextField>() {
                     public TextField apply(TableColumnName columnName) {
                         TextField textField = new TextField();
+                        textField.setId(columnName.getColumnName());
                         textField.setPromptText(columnName.getColumnName());
                         return textField;
                     }
