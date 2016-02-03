@@ -88,7 +88,7 @@ public class GenericTableController {
 
 
 
-    public void setupHierarchyForTableName(String tableName) throws SQLException {
+    private void setupHierarchyForTableName(String tableName) throws SQLException {
 
         genericTableView.getColumns().clear();
 
@@ -116,10 +116,14 @@ public class GenericTableController {
                     ObservableList<String> rowValues = event.getRowValue();
                     Map <String, String> primaryKeysMap = getMappedConditionValues(primaryColumnsList, rowValues, columns);
                     Map<String, String> updatedValuesMap = new HashMap<String, String>();
-                    //TODO: Remember about types, add '' where necessary - REALLY IMPORTANT!!
+
                     TableColumn edited = event.getTableColumn();
                     String newValue = (String)event.getNewValue();
-                    updatedValuesMap.put(edited.getText(), newValue);
+
+                    TableColumnName tableColumn = columnsForTableName.stream().filter(obj -> obj.getColumnName().equals(edited.getText())).collect(Collectors.toList()).get(0);
+
+                    String valueFormatted = TableColumnName.formattedValueBasedOnType(newValue, tableColumn.getColumnType());
+                    updatedValuesMap.put(edited.getText(), valueFormatted);
                     String updateQuery = SQLQuery.updateSQL(tableName, updatedValuesMap,primaryKeysMap );
                     System.out.println("UPDATE QUERY" + updateQuery);
                     try {
@@ -163,8 +167,6 @@ public class GenericTableController {
                                         } catch (SQLException e) {
                                             e.printStackTrace();
                                         }
-
-
                                     } );
                                     setGraphic( btn );
                                 }
@@ -212,7 +214,7 @@ public class GenericTableController {
 
     }
 
-    public void refreshDataInRows(String tableName) throws SQLException {
+    private void refreshDataInRows(String tableName) throws SQLException {
         ResultSet rs = dbWorker.selectGeneralSQL(tableName);
         while (rs.next()) {
             ObservableList<String> row = FXCollections.observableArrayList();
@@ -224,7 +226,7 @@ public class GenericTableController {
         genericTableView.setItems(data);
     }
 
-    public Map<String, String> getMappedConditionValues(List<TableColumnName> primaryColumnsList, ObservableList<String> observableList,
+    private Map<String, String> getMappedConditionValues(List<TableColumnName> primaryColumnsList, ObservableList<String> observableList,
                                                         ObservableList<TableColumn<ObservableList, ?>> columns) {
 
         Map<String, String> primaryKeysMap = new HashMap<String, String>();
@@ -232,14 +234,17 @@ public class GenericTableController {
             for (int k = 0; k < columns.size(); k++) {
                 TableColumn<ObservableList, ?> observableListTableColumn = columns.get(k);
                 if (observableListTableColumn.getText().equals(primaryColumn.getColumnName())) {
-                    primaryKeysMap.put(primaryColumn.getColumnName(), observableList.get(k));
+
+
+                    String valueFormatted = TableColumnName.formattedValueBasedOnType(observableList.get(k), primaryColumn.getColumnType());
+                    primaryKeysMap.put(primaryColumn.getColumnName(), valueFormatted);
                     break;
                 }
             }
         }
         return primaryKeysMap;
     }
-    public Map<String, String> getMappedValuesFromTextFields(List<TextField> textFields, List<TableColumnName> columnNames) {
+    private Map<String, String> getMappedValuesFromTextFields(List<TextField> textFields, List<TableColumnName> columnNames) {
 
         //Mapping should take into account type of the variable.
         Map<String, String> map = new HashMap<>();
@@ -247,18 +252,14 @@ public class GenericTableController {
 
             String id = txtField.getId();
             TableColumnName tableColumn = columnNames.stream().filter(obj -> obj.getColumnName().equals(txtField.getId())).collect(Collectors.toList()).get(0);
-            String txtFieldText = txtField.getText();
-            if (tableColumn.getColumnType() == ColumnType.CHARACTER) {
-                txtFieldText = "'" + txtFieldText + "'";
+            String value = TableColumnName.formattedValueBasedOnType(txtField.getText(), tableColumn.getColumnType());
 
-            }
-
-            map.put( txtField.getId(), txtFieldText);
+            map.put( txtField.getId(), value);
         }
         return map;
     }
 
-    public List<TextField> getInsertTextFieldsForTable(List<TableColumnName> columns) {
+    private List<TextField> getInsertTextFieldsForTable(List<TableColumnName> columns) {
 
         return columns.stream()
                 .map(new Function<TableColumnName, TextField>() {
@@ -273,7 +274,7 @@ public class GenericTableController {
     }
 
 
-    public ObservableList<String> getTableNames() throws SQLException {
+    private ObservableList<String> getTableNames() throws SQLException {
         List<String> listOfTableNames = dbWorker.getTableNames().stream().map(TableName::getTableName)
                 .collect(Collectors.toList());
         return FXCollections.observableArrayList(listOfTableNames);

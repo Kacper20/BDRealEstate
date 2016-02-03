@@ -40,6 +40,13 @@ public class TableColumnName {
 
     }
 
+    public static String formattedValueBasedOnType(String value, ColumnType type) {
+        String base = value;
+        if (type == ColumnType.CHARACTER) {
+            base = "'" + base + "'";
+        }
+        return base;
+    }
 
     public ColumnType getColumnType() {
         return columnType;
