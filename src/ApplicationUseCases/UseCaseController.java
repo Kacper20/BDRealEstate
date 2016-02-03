@@ -45,8 +45,8 @@ public class UseCaseController {
 
         final Label label = new Label("Akcje");
         label.setFont(new Font("Arial", 20));
-        Button button1 = new Button("Agenci-transakcje");
-        button1.setOnAction(new EventHandler<ActionEvent>() {
+        Button buttonTr = new Button("Agenci-transakcje");
+        buttonTr.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
                 try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("agents_controller.fxml"));
@@ -60,10 +60,25 @@ public class UseCaseController {
             }
         });
 
+        Button buttonOf = new Button("Oferty - zdarzenia");
+        buttonOf.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                try {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("offers_controller.fxml"));
+                    Parent root;
+                    root = (Parent)loader.load();
+                    OffersController tableController = (OffersController) loader.getController();
+                    tableController.setupStage(stage, dbWorker);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+
         final VBox vbox = new VBox();
         vbox.setSpacing(5);
         vbox.setPadding(new Insets(10, 0, 0, 10));
-        vbox.getChildren().addAll(label, button1);
+        vbox.getChildren().addAll(label, buttonTr, buttonOf);
 
         ((Group) scene.getRoot()).getChildren().addAll(vbox);
 

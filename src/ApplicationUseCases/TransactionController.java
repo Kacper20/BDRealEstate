@@ -66,7 +66,6 @@ public class TransactionController {
                 new PropertyValueFactory<Transaction, String>("amount"));
 
         table.getColumns().addAll(idCol, titleCol, provCol,  ofCol);
-        table.setItems(getTransactions());
         table.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 dbWorker.updateProvision(table.getSelectionModel().getSelectedItem().getId());
@@ -75,7 +74,7 @@ public class TransactionController {
                     Parent root;
                     root = (Parent)loader.load();
                     TransactionController tableController = (TransactionController) loader.getController();
-                    tableController.setupStage(stage,dbWorker, table.getSelectionModel().getSelectedItem().getId() );
+                    tableController.setupStage(stage,dbWorker, id );
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
