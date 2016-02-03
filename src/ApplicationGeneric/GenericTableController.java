@@ -114,10 +114,9 @@ public class GenericTableController {
             tableColumn.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<ObservableList, String>>() {
                 @Override
                 public void handle(TableColumn.CellEditEvent<ObservableList, String> event) {
-//                    String newValue = (String)event.getNewValue();
+//
                     ObservableList<TableColumn<ObservableList, ?>> columns = event.getTableView().getColumns();
-                    TableColumn edited = event.getTableColumn();
-                    String newValue = (String)event.getNewValue();
+
                     ObservableList<String> observableList = event.getRowValue();
 
                     Map<String, String> primaryKeysMap = new HashMap<String, String>();
@@ -132,13 +131,18 @@ public class GenericTableController {
                         }
                     }
                     Map<String, String> updatedValuesMap = new HashMap<String, String>();
-                    //TODO Insert into database
 
-
-
-          
-
-
+                    //TODO: Remember about types, add '' where necessary - REALLY IMPORTANT!!
+                    TableColumn edited = event.getTableColumn();
+                    String newValue = (String)event.getNewValue();
+                    updatedValuesMap.put(edited.getText(), newValue);
+                    String updateQuery = SQLQuery.updateSQL(tableName, updatedValuesMap,primaryKeysMap );
+                    System.out.println("UPDATE QUERY" + updateQuery);
+                    try {
+                        dbWorker.updateDatabase(updateQuery);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
 
 
                 }

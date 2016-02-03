@@ -51,7 +51,6 @@ public class GenericApplication extends Application {
 // Getting UPDATE SQL Query...
         String updateSQL = SQLQuery.updateSQL("EMPLOYEE", columnValueMappingForSet, columnValueMappingForCondition);
 
-        System.out.println(updateSQL);
         launch(args);
     }
 }
