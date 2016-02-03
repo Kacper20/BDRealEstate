@@ -128,6 +128,7 @@ public class GenericTableController {
                     System.out.println("UPDATE QUERY" + updateQuery);
                     try {
                         dbWorker.updateDatabase(updateQuery);
+                        refreshDataInRows(tableName);
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
@@ -215,6 +216,7 @@ public class GenericTableController {
     }
 
     private void refreshDataInRows(String tableName) throws SQLException {
+        genericTableView.getItems().clear();
         ResultSet rs = dbWorker.selectGeneralSQL(tableName);
         while (rs.next()) {
             ObservableList<String> row = FXCollections.observableArrayList();
@@ -234,8 +236,6 @@ public class GenericTableController {
             for (int k = 0; k < columns.size(); k++) {
                 TableColumn<ObservableList, ?> observableListTableColumn = columns.get(k);
                 if (observableListTableColumn.getText().equals(primaryColumn.getColumnName())) {
-
-
                     String valueFormatted = TableColumnName.formattedValueBasedOnType(observableList.get(k), primaryColumn.getColumnType());
                     primaryKeysMap.put(primaryColumn.getColumnName(), valueFormatted);
                     break;
