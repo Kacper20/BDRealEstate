@@ -171,6 +171,11 @@ public class GenericTableController {
                                     } );
                                     setGraphic( btn );
                                 }
+                                else {
+                                    setGraphic( null );
+                                    setText( null );
+
+                                }
                             }
                         };
                         return cell;

@@ -32,6 +32,8 @@ public class GenericApplication extends Application {
         tableController.setupStage(primaryStage);
 
 
+        primaryStage.setMinWidth(1400);
+        primaryStage.setMinHeight(700);
 
 
 
