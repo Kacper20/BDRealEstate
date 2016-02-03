@@ -34,7 +34,7 @@ public class EventsController {
 
     public void basicSetup(Stage stage) throws SQLException {
         Scene scene = new Scene(new Group());
-        stage.setTitle("Transakcje wybranego agenta");
+        stage.setTitle("Zdarzenia");
         stage.setWidth(800);
         stage.setHeight(500);
 

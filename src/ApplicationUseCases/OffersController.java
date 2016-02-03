@@ -33,11 +33,11 @@ public class OffersController {
 
     public void basicSetup(Stage stage) throws SQLException {
         Scene scene = new Scene(new Group());
-        stage.setTitle("Najpopularniejsze dzielnice");
+        stage.setTitle("Oferty");
         stage.setWidth(800);
         stage.setHeight(500);
 
-        final Label label = new Label("Dzielnice");
+        final Label label = new Label("Wszystkie oferty");
         label.setFont(new Font("Arial", 20));
 
         TableColumn idCol = new TableColumn("Id oferty");
