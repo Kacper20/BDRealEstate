@@ -95,6 +95,8 @@ public class GenericTableController {
 
         genericTableView.getColumns().clear();
 
+        List<TableColumnName> primaryColumnsList = dbWorker.getPrimaryKeys(tableName);
+
         this.data = FXCollections.observableArrayList();
         List<TableColumnName> columnsForTableName = dbWorker.getColumnsForTableName(tableName);
         for (int i = 0; i < columnsForTableName.size(); i++) {
@@ -109,10 +111,35 @@ public class GenericTableController {
                 }
             });
 
-            tableColumn.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent>() {
+            tableColumn.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<ObservableList, String>>() {
                 @Override
-                public void handle(TableColumn.CellEditEvent event) {
+                public void handle(TableColumn.CellEditEvent<ObservableList, String> event) {
 //                    String newValue = (String)event.getNewValue();
+                    ObservableList<TableColumn<ObservableList, ?>> columns = event.getTableView().getColumns();
+                    TableColumn edited = event.getTableColumn();
+                    String newValue = (String)event.getNewValue();
+                    ObservableList<String> observableList = event.getRowValue();
+
+                    Map<String, String> primaryKeysMap = new HashMap<String, String>();
+
+                    for (TableColumnName primaryColumn: primaryColumnsList) {
+                        for (int k = 0; k < columns.size(); k++) {
+                            TableColumn<ObservableList, ?> observableListTableColumn = columns.get(k);
+                            if (observableListTableColumn.getText().equals(primaryColumn.getColumnName())) {
+                                primaryKeysMap.put(primaryColumn.getColumnName(), observableList.get(k));
+                                break;
+                            }
+                        }
+                    }
+                    Map<String, String> updatedValuesMap = new HashMap<String, String>();
+                    //TODO Insert into database
+
+
+
+          
+
+
+
 
                 }
             });
