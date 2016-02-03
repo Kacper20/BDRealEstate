@@ -189,7 +189,7 @@ public class GenericTableController {
         addObjectToDatabaseButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                Map<String, String> mapped = getMappedValuesFromTextFields(textFields);
+                Map<String, String> mapped = getMappedValuesFromTextFields(textFields, columnsForTableName);
                 String query = SQLQuery.insertSQL(tableName, mapped);
                 try {
                     dbWorker.insertIntoDatabase(query);
@@ -239,12 +239,21 @@ public class GenericTableController {
         }
         return primaryKeysMap;
     }
-    public Map<String, String> getMappedValuesFromTextFields(List<TextField> textFields) {
+    public Map<String, String> getMappedValuesFromTextFields(List<TextField> textFields, List<TableColumnName> columnNames) {
 
         //Mapping should take into account type of the variable.
         Map<String, String> map = new HashMap<>();
         for (TextField txtField: textFields) {
-            map.put( txtField.getId(), txtField.getText());
+
+            String id = txtField.getId();
+            TableColumnName tableColumn = columnNames.stream().filter(obj -> obj.getColumnName().equals(txtField.getId())).collect(Collectors.toList()).get(0);
+            String txtFieldText = txtField.getText();
+            if (tableColumn.getColumnType() == ColumnType.CHARACTER) {
+                txtFieldText = "'" + txtFieldText + "'";
+
+            }
+
+            map.put( txtField.getId(), txtFieldText);
         }
         return map;
     }

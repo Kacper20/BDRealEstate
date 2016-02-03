@@ -40,6 +40,15 @@ public class TableColumnName {
 
     }
 
+
+    public ColumnType getColumnType() {
+        return columnType;
+    }
+
+    public void setColumnType(ColumnType columnType) {
+        this.columnType = columnType;
+    }
+
     public String getColumnName() {
         return columnName;
     }
