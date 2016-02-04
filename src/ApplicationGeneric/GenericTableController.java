@@ -38,9 +38,13 @@ public class GenericTableController {
     private ObservableList<ObservableList> data;
     GenericWorker dbWorker;
 
-
+    private ComboBox columnBox;
+    private TextField selectValueTextField;
     HBox hBox;
+    String currentQueryKey;
+    String currentQueryValue;
 
+    String currentTableName;
 
     public TableView genericTableView = new TableView();
 
@@ -66,6 +70,9 @@ public class GenericTableController {
 
 
 
+        HBox horizontalBox = new HBox();
+        horizontalBox.setSpacing(10);
+
         final ComboBox comboBox = new ComboBox();
         comboBox.getItems().addAll(getTableNames());
         comboBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
@@ -80,22 +87,81 @@ public class GenericTableController {
                 }
             }
         });
-        vbox.getChildren().addAll(label, comboBox, genericTableView, hBox);
+
+
+        columnBox = new ComboBox();
+
+
+
+        selectValueTextField = new TextField();
+
+        Button setValueButton = new Button();
+        setValueButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+               String columnName = (String) columnBox.getSelectionModel().getSelectedItem().toString();
+                TableColumnName tableColumn = columnsForTableName.stream().filter(obj -> obj.getColumnName().equals(columnName)).collect(Collectors.toList()).get(0);
+                String text = selectValueTextField.getText();
+                if (text.length() == 0) { return; }
+                String formatted = TableColumnName.formattedValueBasedOnType(text, tableColumn.getColumnType());
+
+
+                currentQueryKey = tableColumn.getColumnName();
+                currentQueryValue = formatted;
+                try {
+                    refreshDataInRows(currentTableName, currentQueryKey, currentQueryValue);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+        setValueButton.setText("Ustaw");
+
+
+        Button resetButton = new Button();
+        resetButton.setText("RESET");
+        resetButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                currentQueryKey = null;
+                currentQueryValue = null;
+                try {
+                    refreshDataInRows(currentTableName, currentQueryKey, currentQueryValue);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        Label equalLabel = new Label();
+        equalLabel.setText(" = ");
+        horizontalBox.getChildren().addAll(comboBox, columnBox, equalLabel, selectValueTextField, setValueButton, resetButton);
+
+        vbox.getChildren().addAll(label, horizontalBox, genericTableView, hBox);
         Scene scene = new Scene(new Group());
         ((Group) scene.getRoot()).getChildren().addAll(vbox);
         stage.setScene(scene);
     }
 
 
+    List<TableColumnName> columnsForTableName;
 
     private void setupHierarchyForTableName(String tableName) throws SQLException {
 
+
+
+        currentTableName = tableName;
         genericTableView.getColumns().clear();
 
         List<TableColumnName> primaryColumnsList = dbWorker.getPrimaryKeys(tableName);
 
         this.data = FXCollections.observableArrayList();
-        List<TableColumnName> columnsForTableName = dbWorker.getColumnsForTableName(tableName);
+        columnsForTableName = dbWorker.getColumnsForTableName(tableName);
+
+        columnBox.getItems().clear();
+        columnBox.getItems().addAll(columnsForTableName.stream().map(col -> col.getColumnName()).collect(Collectors.toList()));
+
+
         for (int i = 0; i < columnsForTableName.size(); i++) {
             final int j = i;
             TableColumnName tcm = columnsForTableName.get(i);
@@ -128,7 +194,7 @@ public class GenericTableController {
                     System.out.println("UPDATE QUERY" + updateQuery);
                     try {
                         dbWorker.updateDatabase(updateQuery);
-                        refreshDataInRows(tableName);
+                        refreshDataInRows(tableName, currentQueryKey, currentQueryValue);
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
@@ -164,7 +230,7 @@ public class GenericTableController {
                                         String deleteQuery = SQLQuery.deleteSQL(tableName, primaryKeysForRowMap);
                                         try {
                                             dbWorker.deleteFromDatabase(deleteQuery);
-                                            refreshDataInRows(tableName);
+                                            refreshDataInRows(tableName, currentQueryKey, currentQueryValue);
                                         } catch (SQLException e) {
                                             e.printStackTrace();
                                         }
@@ -189,7 +255,7 @@ public class GenericTableController {
 
 
 
-        refreshDataInRows(tableName);
+        refreshDataInRows(tableName, currentQueryKey, currentQueryValue);
 
         List<TextField> textFields = getInsertTextFieldsForTable(columnsForTableName);
         Button addObjectToDatabaseButton = new Button();
@@ -220,9 +286,16 @@ public class GenericTableController {
 
     }
 
-    private void refreshDataInRows(String tableName) throws SQLException {
+    private void refreshDataInRows(String tableName, String key, String value) throws SQLException {
         genericTableView.getItems().clear();
-        ResultSet rs = dbWorker.selectGeneralSQL(tableName);
+
+        ResultSet rs;
+        if (key != null && value != null) {
+            rs = dbWorker.selectConditionSQL(tableName, key, value);
+        }
+        else {
+            rs = dbWorker.selectGeneralSQL(tableName);
+        }
         while (rs.next()) {
             ObservableList<String> row = FXCollections.observableArrayList();
             for (int indx = 1; indx <= rs.getMetaData().getColumnCount(); indx++) {
@@ -232,6 +305,7 @@ public class GenericTableController {
         }
         genericTableView.setItems(data);
     }
+
 
     private Map<String, String> getMappedConditionValues(List<TableColumnName> primaryColumnsList, ObservableList<String> observableList,
                                                         ObservableList<TableColumn<ObservableList, ?>> columns) {
