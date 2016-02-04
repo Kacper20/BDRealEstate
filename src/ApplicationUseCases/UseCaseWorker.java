@@ -116,4 +116,76 @@ public class UseCaseWorker {
         }
         return data;
     }
+
+    public ObservableList<MostFamousController.District> getDistrictData(String howMany) {
+        ObservableList<MostFamousController.District> data = FXCollections.observableArrayList();
+        try{
+            String SQL = "SELECT dz.nazwa, dz.id, COUNT(*) as Cnt FROM dzielnica dz, nieruchomosc n, oferta of, transakcja t " +
+                    "WHERE " +
+                    "dz.miasto_id = n.miasto_id AND " +
+                    "of.nieruchomosc_id = n.id AND " +
+                    "t.oferta_id = of.id " +
+                    "GROUP BY dz.nazwa, dz.id ORDER BY Cnt desc LIMIT " + howMany;
+            ResultSet rs = c.createStatement().executeQuery(SQL);
+            while(rs.next()){
+                MostFamousController.District t = new MostFamousController.District(rs);
+                data.add(t);
+            }
+            rs.close();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            System.out.println("Error on Building Data");
+        }
+        return data;
+    }
+
+    public ObservableList<DistrictSettlementsController.Settlement> getSettlements(String id) {
+        ObservableList<DistrictSettlementsController.Settlement> data = FXCollections.observableArrayList();
+        try{
+            String SQL = "SELECT o.id, o.nazwa as Onazwa " +
+                    "FROM osiedle o " +
+                    "WHERE o.dzielnica_id = " + id;
+            ResultSet rs = c.createStatement().executeQuery(SQL);
+            while(rs.next()){
+                DistrictSettlementsController.Settlement t = new DistrictSettlementsController.Settlement(rs);
+                data.add(t);
+            }
+            rs.close();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            System.out.println("Error on Building Data");
+        }
+        return data;
+    }
+
+    public ObservableList<DistrictSettlementsController.Attribute> getAllSettlementAttributes() {
+        ObservableList<DistrictSettlementsController.Attribute> data = FXCollections.observableArrayList();
+        try{
+            String SQL = "SELECT co.id, co.nazwa " +
+                    "FROM cecha_osiedla co ";
+            ResultSet rs = c.createStatement().executeQuery(SQL);
+            while(rs.next()){
+                DistrictSettlementsController.Attribute t = new DistrictSettlementsController.Attribute(rs);
+                data.add(t);
+            }
+            rs.close();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            System.out.println("Error on Building Data");
+        }
+        return data;
+    }
+
+    public void setSettlementAttribute(DistrictSettlementsController.Settlement settlement, DistrictSettlementsController.Attribute attribute) {
+        String SQL = "INSERT INTO osiedle_cecha_osiedla " +
+                "values ("+ attribute.getId() +", " + settlement.getId() + ", null)";
+        try {
+            c.createStatement().executeUpdate(SQL);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
