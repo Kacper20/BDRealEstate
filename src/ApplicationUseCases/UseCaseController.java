@@ -96,10 +96,26 @@ public class UseCaseController {
             }
         });
 
+        Button buttonCs = new Button("Miasta - statystyki");
+        buttonCs.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                try {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("citychooser_controller.fxml"));
+                    Parent root;
+                    root = (Parent) loader.load();
+                    CityChooserController tableController = (CityChooserController) loader.getController();
+                    tableController.setupStage(stage, dbWorker);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+
         final VBox vbox = new VBox();
         vbox.setSpacing(5);
         vbox.setPadding(new Insets(10, 0, 0, 10));
-        vbox.getChildren().addAll(label, buttonTr, buttonOf, buttonDs);
+        vbox.getChildren().addAll(label, buttonTr, buttonOf, buttonDs, buttonCs);
 
         ((Group) scene.getRoot()).getChildren().addAll(vbox);
 

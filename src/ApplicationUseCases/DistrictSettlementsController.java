@@ -25,7 +25,6 @@ public class DistrictSettlementsController {
     private TableView<Attribute> secondTable = new TableView<>();
     UseCaseWorker dbWorker;
     private String id;
-//    private TextField newAttributeName;
 
     public void setupStage(Stage stage, UseCaseWorker worker, String id) throws SQLException {
 
