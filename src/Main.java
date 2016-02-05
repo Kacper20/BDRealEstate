@@ -1,4 +1,5 @@
 import DBKit.ConnectionManager;
+import Generator.DataGenerator;
 
 import java.sql.SQLException;
 
@@ -9,5 +10,7 @@ public class Main {
 
     public static void main(String[] args) throws SQLException {
         ConnectionManager.getInstance().connect();
+        DataGenerator dataGenerator = new DataGenerator();
+        dataGenerator.generateDatabase();
     }
 }
