@@ -1,12 +1,14 @@
 package Generator;
 
 
+import ApplicationGeneric.GenericWorker;
 import DBKit.SQLQuery;
 import Entities.*;
 import io.codearte.jfairy.Fairy;
 import io.codearte.jfairy.producer.person.Person;
 import org.postgresql.util.PGmoney;
 
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -34,38 +36,38 @@ public class DataGenerator {
 
 
         //Agenci
-        List<Agent> agents = generateAgent(10000, 0);
+        List<Agent> agents = generateAgent(1000, 0);
         for(Agent a: agents)
         {
-            kv.put("imie", a.getImie());
-            kv.put("nazwisko", a.getNazwisko());
-            kv.put("pesel", a.getPesel());
+            kv.put("imie", "'" + a.getImie() + "'");
+            kv.put("nazwisko",  "'" + a.getNazwisko() + "'");
+            kv.put("pesel",  "'" + a.getPesel() + "'");
             kv.put("id", Integer.toString(a.getId()));
             kv.put("nr_agenta", Integer.toString(a.getNumerAgenta()));
             inserts.add(SQLQuery.insertSQL("Agent", kv));
         }
         kv.clear();
-        List<Deweloper> dewelopers = generateDeweloper(10000, 0);
+        List<Deweloper> dewelopers = generateDeweloper(1000, 0);
         for(Deweloper d: dewelopers)
         {
             kv.put("id", Integer.toString(d.getId()));
-            kv.put("nazwa", d.getNazwa());
-            kv.put("ulica", d.getUlica());
-            kv.put("nr_domu", d.getNrDomu());
-            kv.put("nr_mieszkania", d.getNrMieszkania());
-            kv.put("miasto", d.getMiasto());
+            kv.put("nazwa", "'" + d.getNazwa() + "'");
+            kv.put("ulica", "'" + d.getUlica() + "'");
+            kv.put("nr_domu", "'" + d.getNrDomu() + "'");
+            kv.put("nr_mieszkania", "'" + d.getNrMieszkania() + "'");
+            kv.put("miasto", "'" + d.getMiasto() + "'");
             inserts.add(SQLQuery.insertSQL("Deweloper", kv));
         }
         kv.clear();
-        List<Adres> adres = generateAdres(10000, 0);
+        List<Adres> adres = generateAdres(1000, 0);
         for(Adres a: adres)
         {
             kv.put("id", Integer.toString(a.getId()));
-            kv.put("kod_pocztowy", a.getKodPocztowy());
-            kv.put("ulica", a.getUlica());
-            kv.put("nr_domu", a.getNrDomu());
-            kv.put("nr_mieszkania", a.getNrMieszkania());
-            kv.put("miasto", a.getMiasto());
+            kv.put("kod_pocztowy", "'" + a.getKodPocztowy() + "'");
+            kv.put("ulica", "'" + a.getUlica() + "'");
+            kv.put("nr_domu", "'" + a.getNrDomu() + "'");
+            kv.put("nr_mieszkania", "'" + a.getNrMieszkania() + "'");
+            kv.put("miasto", "'" + a.getMiasto() + "'");
             inserts.add(SQLQuery.insertSQL("Adres", kv));
         }
         kv.clear();
@@ -73,64 +75,64 @@ public class DataGenerator {
         for(Miasto m: miasto)
         {
             kv.put("id", Integer.toString(m.getId()));
-            kv.put("nazwa", m.getNazwa());
+            kv.put("nazwa", "'" + m.getNazwa() + "'");
             inserts.add(SQLQuery.insertSQL("Miasto", kv));
         }
         kv.clear();
-        List<TypOferty> oferty = generateTypOferty(10, 0);
+        List<TypOferty> oferty = generateTypOferty(1000, 0);
         for(TypOferty t: oferty)
         {
             kv.put("id", Integer.toString(t.getId()));
-            kv.put("nazwa", t.getNazwa());
+            kv.put("nazwa", "'" + t.getNazwa() + "'");
             inserts.add(SQLQuery.insertSQL("Typ_oferty", kv));
         }
         kv.clear();
-        List<TypZdarzenia> zdarzenia = generateTypZdarzenia(10, 0);
+        List<TypZdarzenia> zdarzenia = generateTypZdarzenia(100, 0);
         for(TypZdarzenia t: zdarzenia)
         {
             kv.put("id", Integer.toString(t.getId()));
-            kv.put("nazwa", t.getNazwa());
+            kv.put("nazwa", "'" + t.getNazwa() + "'");
             inserts.add(SQLQuery.insertSQL("Typ_zdarzenia", kv));
         }
         kv.clear();
-        List<Cecha> cecha = generateCecha(100, 0);
+        List<Cecha> cecha = generateCecha(1000, 0);
         for(Cecha c: cecha)
         {
             kv.put("id", Integer.toString(c.getId()));
-            kv.put("nazwa", c.getNazwa());
+            kv.put("nazwa", "'" + c.getNazwa() + "'");
             kv.put("typ", Integer.toString(c.getTyp()));
             inserts.add(SQLQuery.insertSQL("Cecha", kv));
         }
         kv.clear();
-        List<CechaOsiedla> cechaOsiedla = generateCechaOsiedla(100, 0);
+        List<CechaOsiedla> cechaOsiedla = generateCechaOsiedla(1000, 0);
         for(CechaOsiedla c: cechaOsiedla)
         {
             kv.put("id", Integer.toString(c.getId()));
-            kv.put("nazwa", c.getNazwa());
+            kv.put("nazwa", "'" + c.getNazwa() + "'");
 
             inserts.add(SQLQuery.insertSQL("Cecha_osiedla", kv));
         }
         kv.clear();
-        List<CechaDzielnicy> cechaDzielnicy = generateCechaDzielnicy(100, 0);
+        List<CechaDzielnicy> cechaDzielnicy = generateCechaDzielnicy(1000, 0);
         for(CechaDzielnicy c: cechaDzielnicy)
         {
             kv.put("id", Integer.toString(c.getId()));
-            kv.put("nazwa", c.getNazwa());
+            kv.put("nazwa", "'" + c.getNazwa() + "'");
 
             inserts.add(SQLQuery.insertSQL("Cecha_dzielnicy", kv));
         }
         kv.clear();
-        List<Klient> klients = generateKlient(10000, 0, adres.size());
+        List<Klient> klients = generateKlient(1000, 0, adres.size());
         for(Klient k: klients)
         {
             kv.put("id", Integer.toString(k.getId()));
-            kv.put("imie", k.getImie());
-            kv.put("nazwisko", k.getNazwisko());
-            kv.put("plec", k.getPlec());
-            kv.put("obywatelstwo", k.getObywatelstwo());
+            kv.put("imie", "'" + k.getImie() + "'");
+            kv.put("nazwisko", "'" + k.getNazwisko() + "'");
+            kv.put("plec", "'" + k.getPlec() + "'");
+            kv.put("obywatelstwo", "'" + k.getObywatelstwo() + "'");
             kv.put("adres_zamieszkania", Integer.toString(k.getAdresZamieszkania()));
-            kv.put("nr_telefonu", k.getNrTelefonu());
-            kv.put("email", k.getEmail());
+            kv.put("nr_telefonu", "'" + k.getNrTelefonu() + "'");
+            kv.put("email", "'" + k.getEmail() + "'");
             inserts.add(SQLQuery.insertSQL("Klient", kv));
         }
         kv.clear();
@@ -138,7 +140,7 @@ public class DataGenerator {
         for(Preferencja p: preferencja)
         {
             kv.put("id", Integer.toString(p.getId()));
-            kv.put("wartosc", p.getWartosc());
+            kv.put("wartosc", "'" + p.getWartosc() + "'");
             kv.put("od", Integer.toString(p.getOd()));
             kv.put("do", Integer.toString(p.getDo()));
             kv.put("cecha_id", Integer.toString(p.getCechaId()));
@@ -158,7 +160,7 @@ public class DataGenerator {
         {
             kv.put("id", Integer.toString(d.getId()));
             kv.put("miasto_id", Integer.toString(d.getId()));
-            kv.put("nazwa", d.getNazwa());
+            kv.put("nazwa", "'" + d.getNazwa() + "'");
             inserts.add(SQLQuery.insertSQL("Dzielnica", kv));
         }
         kv.clear();
@@ -171,12 +173,12 @@ public class DataGenerator {
             inserts.add(SQLQuery.insertSQL("dzielnica_cecha_dzielnicy", kv));
         }
         kv.clear();
-        List<Osiedle> osiedle = generateOsiedle(300, 0, dzielnica.size());
+        List<Osiedle> osiedle = generateOsiedle(3, 0, dzielnica.size());
         for(Osiedle o: osiedle)
         {
             kv.put("id", Integer.toString(o.getId()));
             kv.put("dzielnica_id", Integer.toString(o.getId()));
-            kv.put("nazwa", o.getNazwa());
+            kv.put("nazwa", "'" + o.getNazwa() + "'");
             inserts.add(SQLQuery.insertSQL("Osiedle", kv));
         }
         kv.clear();
@@ -189,57 +191,57 @@ public class DataGenerator {
             inserts.add(SQLQuery.insertSQL("osiedle_cecha_osiedla", kv));
         }
         kv.clear();
-        List<Projekt> projekt = generateProjekt(100, 0, dewelopers.size(), osiedle.size());
+        List<Projekt> projekt = generateProjekt(1, 0, dewelopers.size(), osiedle.size());
         for(Projekt p: projekt)
         {
             kv.put("id", Integer.toString(p.getId()));
             kv.put("deweloper_id", Integer.toString(p.getDeweloperId()));
-            kv.put("nazwa", p.getNazwa());
-            kv.put("opis", p.getOpis());
+            kv.put("nazwa", "'" + p.getNazwa() + "'");
+            kv.put("opis", "'" + p.getOpis() + "'");
             kv.put("osiedle_id", Integer.toString(p.getOsiedle_id()));
-            kv.put("przewidywana_data_realizacji", p.getPrzewidywanaDataRealizacji().toString());
-            kv.put("data_realizacji", p.getDataRealizacji().toString());
-            kv.put("data_rozpoczęcia", p.getDataRozpoczecia().toString());
+            kv.put("przewidywana_data_realizacji", "'" + p.getPrzewidywanaDataRealizacji().toString() + "'");
+            kv.put("data_realizacji", "'" + p.getDataRealizacji().toString() + "'");
+            kv.put("data_rozpoczęcia", "'" + p.getDataRozpoczecia().toString() + "'");
             inserts.add(SQLQuery.insertSQL("projekt", kv));
         }
         kv.clear();
-        List<Budynek> budynek = generateBudynek(300, 0, projekt.size());
+        List<Budynek> budynek = generateBudynek(5000, 0, projekt.size());
         for(Budynek b: budynek)
         {
             kv.put("id", Integer.toString(b.getId()));
             kv.put("projekt_id", Integer.toString(b.getProjektId()));
-            kv.put("ulica", b.getUlica());
-            kv.put("nr_budynku", b.getNrBudynku());
+            kv.put("ulica", "'" + b.getUlica() + "'");
+            kv.put("nr_budynku", "'" + b.getNrBudynku() + "'");
             inserts.add(SQLQuery.insertSQL("budynek", kv));
         }
         kv.clear();
-        List<TypMieszkania> typmiesz = generateTypMieszkania(50, 0, budynek.size());
+        List<TypMieszkania> typmiesz = generateTypMieszkania(100, 0, budynek.size());
         for(TypMieszkania t: typmiesz)
         {
             kv.put("id", Integer.toString(t.getId()));
             kv.put("ile", Integer.toString(t.getIle()));
-            kv.put("klasa", t.getKlasa());
+            kv.put("klasa", "'" + t.getKlasa() + "'");
             kv.put("budynek_id", Integer.toString(t.getBudynekId()));
             inserts.add(SQLQuery.insertSQL("typ_mieszkania", kv));
         }
         kv.clear();
-        List<Nieruchomosc> nieruchomosc = generateNieruchomosc(500, 0, klients.size(), osiedle.size(), typmiesz.size(), dzielnica, osiedle);
+        List<Nieruchomosc> nieruchomosc = generateNieruchomosc(5000, 0, klients.size(), osiedle.size(), typmiesz.size(), dzielnica, osiedle);
         for(Nieruchomosc n: nieruchomosc)
         {
             kv.put("id", Integer.toString(n.getId()));
-            kv.put("id", Integer.toString(n.getNumerWieczysty()));
-            kv.put("tytul_nieruchomosci", n.getTytulNieruchomosci());
-            kv.put("opis_nieruchomosci", n.getOpisNieruchomosci());
-            kv.put("data_stworzenia", n.getDataStworzenia().toString());
+            kv.put("nr_wieczysty", Integer.toString(n.getNumerWieczysty()));
+            kv.put("tytul_nieruchomosci", "'" + n.getTytulNieruchomosci() + "'");
+            kv.put("opis_nieruchomosci", "'" + n.getOpisNieruchomosci() + "'");
+            kv.put("data_stworzenia", "'" + n.getDataStworzenia().toString() + "'");
             kv.put("klient", Integer.toString(n.getKlient()));
             kv.put("osiedle_id", Integer.toString(n.getOsiedleId()));
             kv.put("dzielnica_id", Integer.toString(n.getDzielnicaId()));
             kv.put("miasto_id", Integer.toString(n.getMiastoId()));
-            kv.put("ulica", n.getUlica());
-            kv.put("nr_domu", n.getNrDomu());
-            kv.put("nr_mieszkania", n.getNrMieszkania());
-            kv.put("kod_pocztowy", n.getKodPocztowy());
-            kv.put("id", Integer.toString(n.getTypMieszkaniaId()));
+            kv.put("ulica", "'" + n.getUlica() + "'");
+            kv.put("nr_domu", "'" + n.getNrDomu() + "'");
+            kv.put("nr_mieszkania", "'" + n.getNrMieszkania() + "'");
+            kv.put("kod_pocztowy", "'" + n.getKodPocztowy() + "'");
+            kv.put("typ_mieszkania_id", Integer.toString(n.getTypMieszkaniaId()));
             inserts.add(SQLQuery.insertSQL("nieruchomosc", kv));
         }
         kv.clear();
@@ -253,22 +255,22 @@ public class DataGenerator {
             inserts.add(SQLQuery.insertSQL("wlasnosc_nieruchomosci", kv));
         }
         kv.clear();
-        List<Oferta> oferta = generateOferta(400, 0, nieruchomosc.size(), oferty.size(), agents.size());
+        List<Oferta> oferta = generateOferta(4, 0, nieruchomosc.size(), oferty.size(), agents.size());
         for(Oferta o: oferta)
         {
             kv.put("id", Integer.toString(o.getId()));
             kv.put("nieruchomosc_id", Integer.toString(o.getId()));
-            kv.put("tytul", o.getTytul());
-            kv.put("opis", o.getOpis());
+            kv.put("tytul", "'" + o.getTytul() + "'");
+            kv.put("opis", "'" + o.getOpis() + "'");
             kv.put("cena", o.getCena().toString());
-            kv.put("czy_dostepna", (o.isCzyDostepne() ? "True" : "False"));
-            kv.put("data_wprowadzenia", o.getDataWprowadzenia().toString());
+            kv.put("czy_dostepna", "'" + (o.isCzyDostepne() ? "True" : "False") + "'");
+            kv.put("data_wprowadzenia","'" +  o.getDataWprowadzenia().toString() + "'");
             kv.put("agent_id", Integer.toString(o.getId()));
             inserts.add(SQLQuery.insertSQL("oferta", kv));
 
         }
         kv.clear();
-        List<Transakcja> transakcjas = generateTransakcja(300, 0, oferta.size(), klients.size(), klients.size());
+        List<Transakcja> transakcjas = generateTransakcja(7000, 0, oferta.size(), klients.size(), klients.size());
         for(Transakcja t: transakcjas)
         {
             kv.put("id", Integer.toString(t.getId()));
@@ -280,7 +282,7 @@ public class DataGenerator {
 
         }
         kv.clear();kv.clear();
-        List<Ocena> ocenas = generateOcena(300, 0, transakcjas.size(), transakcjas, oferta);
+        List<Ocena> ocenas = generateOcena(30000, 0, transakcjas.size(), transakcjas, oferta);
         for(Ocena o: ocenas)
         {
             kv.put("id", Integer.toString(o.getId()));
@@ -293,7 +295,7 @@ public class DataGenerator {
         for (Zdarzenie z: zdarzenie)
         {
             kv.put("id", Integer.toString(z.getId()));
-            kv.put("opinia_klienta", z.getOpiniaKlienta());
+            kv.put("opinia_klienta", "'" + z.getOpiniaKlienta() + "'");
             kv.put("agent_id", Integer.toString(z.getAgentId()));
             kv.put("oferta_id", Integer.toString(z.getOfertaId()));
             kv.put("transakcja_id", Integer.toString(z.getTransakcjaId()));
@@ -302,6 +304,16 @@ public class DataGenerator {
         }
         kv.clear();
         inserts.forEach(System.out::println);
+        try {
+            GenericWorker genericWorker = new GenericWorker();
+            for(String s: inserts)
+            {
+                genericWorker.insertIntoDatabase(s);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public String generateRandomString(int length, Mode mode) throws Exception {
@@ -351,7 +363,6 @@ public class DataGenerator {
         }
         return agents;
     }
-
     public List<Adres> generateAdres(int number, int startId)
     {
 
@@ -366,7 +377,6 @@ public class DataGenerator {
         }
         return adresses;
     }
-
     public List<Budynek> generateBudynek(int number, int startId, int proId)
     {
         Random random = new Random();
@@ -381,7 +391,6 @@ public class DataGenerator {
         }
         return budynek;
     }
-
     public List<Cecha> generateCecha(int number, int startId)
     {
         List<Cecha> cechy = new ArrayList<>();
@@ -395,7 +404,6 @@ public class DataGenerator {
         }
         return cechy;
     }
-
     public List<CechaDzielnicy> generateCechaDzielnicy(int number, int startId)
     {
         List<CechaDzielnicy> cechy = new ArrayList<>();
@@ -504,7 +512,6 @@ public class DataGenerator {
         }
         return city;
     }
-
     public List<Nieruchomosc> generateNieruchomosc(int number, int startId, int kId, int oId, int tmId, List<Dzielnica> d, List<Osiedle> o)
     {
         Random random = new Random();
@@ -518,8 +525,12 @@ public class DataGenerator {
             osId = random.nextInt(oId);
             Person person = fairy.person();
             try {
-                nieruchomosc.add(new Nieruchomosc(i, random.nextInt(), random.nextInt(kId), random.nextInt(osId), o.get(osId).getDzielnicaId(), d.get(o.get(osId).getDzielnicaId()).getMiastoId(),
-                        random.nextInt(), new Date(new Date().getTime()), generateRandomString(20, Mode.ALPHA), generateRandomString(20, Mode.ALPHA), Streets.getStreet(),generateRandomString(2, Mode.NUMERIC),
+//                if(kId <= 0 || osId <= 0 || tmId <= 0 )
+//                {
+//                    System.out.println("ups");
+//                }
+                nieruchomosc.add(new Nieruchomosc(i, random.nextInt(100000), random.nextInt(kId), osId, o.get(osId).getDzielnicaId(), d.get(o.get(osId).getDzielnicaId()).getMiastoId(),
+                        random.nextInt(tmId), new Date(new Date().getTime()), generateRandomString(20, Mode.ALPHA), generateRandomString(20, Mode.ALPHA), Streets.getStreet(),generateRandomString(2, Mode.NUMERIC),
                         generateRandomString(2, Mode.NUMERIC), generateRandomString(5, Mode.NUMERIC)));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -663,7 +674,7 @@ public class DataGenerator {
         for(int i = startId; i < number + startId ; i++)
         {
             try {
-                typy.add(new TypOferty(i, generateRandomString(30, Mode.ALPHA)));
+                typy.add(new TypOferty(i, generateRandomString(10, Mode.ALPHA)));
             } catch (Exception e) {
                 e.printStackTrace();
             }
