@@ -61,6 +61,18 @@ public class GenericWorker {
         int i = 0;
         return rs;
     }
+    public ResultSet selectConditionSQL(String tableName, String key, String value) throws SQLException {
+        PreparedStatement ps;
+        String stringQuery = String.format("SELECT * FROM %s WHERE %s = %s;", tableName, key, value);
+
+        ps = c.prepareStatement(stringQuery);
+
+        System.out.println(ps);
+
+        ResultSet rs =  ps.executeQuery();
+
+        return rs;
+    }
 
 
     public List<TableColumnName> getPrimaryKeys(String tableName) throws SQLException {

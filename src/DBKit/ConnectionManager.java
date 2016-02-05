@@ -27,7 +27,6 @@ public class ConnectionManager {
     private ConnectionManager() throws SQLException {
         DriverManager.registerDriver(new Driver());
     }
-
     public Connection getConn() {
         return conn;
     }

@@ -5,6 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -43,18 +44,18 @@ public class UseCaseWorker {
     public void updateProvision(String id) {
         try{
             String SQL = "update transakcja set prowizja = 2*prowizja where id = " + id;
-            c.createStatement().executeQuery(SQL);
+            c.createStatement().executeUpdate(SQL);
         } catch(Exception e) {
-
+            e.printStackTrace();
         }
     }
 
     public void deleteEvent(String id) {
         try{
             String SQL = "delete from zdarzenie where id = " + id;
-            c.createStatement().executeQuery(SQL);
+            c.createStatement().executeUpdate(SQL);
         } catch(Exception e) {
-
+            e.printStackTrace();
         }
     }
 
@@ -115,5 +116,136 @@ public class UseCaseWorker {
             System.out.println("Error on Building Data");
         }
         return data;
+    }
+
+    public ObservableList<MostFamousController.District> getDistrictData(String howMany) {
+        ObservableList<MostFamousController.District> data = FXCollections.observableArrayList();
+        try{
+            String SQL = "SELECT dz.nazwa, dz.id, COUNT(*) as Cnt FROM dzielnica dz, nieruchomosc n, oferta of, transakcja t " +
+                    "WHERE " +
+                    "dz.miasto_id = n.miasto_id AND " +
+                    "of.nieruchomosc_id = n.id AND " +
+                    "t.oferta_id = of.id " +
+                    "GROUP BY dz.nazwa, dz.id ORDER BY Cnt desc LIMIT " + howMany;
+            ResultSet rs = c.createStatement().executeQuery(SQL);
+            while(rs.next()){
+                MostFamousController.District t = new MostFamousController.District(rs);
+                data.add(t);
+            }
+            rs.close();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            System.out.println("Error on Building Data");
+        }
+        return data;
+    }
+
+    public ObservableList<DistrictSettlementsController.Settlement> getSettlements(String id) {
+        ObservableList<DistrictSettlementsController.Settlement> data = FXCollections.observableArrayList();
+        try{
+            String SQL = "SELECT o.id, o.nazwa as Onazwa " +
+                    "FROM osiedle o " +
+                    "WHERE o.dzielnica_id = " + id;
+            ResultSet rs = c.createStatement().executeQuery(SQL);
+            while(rs.next()){
+                DistrictSettlementsController.Settlement t = new DistrictSettlementsController.Settlement(rs);
+                data.add(t);
+            }
+            rs.close();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            System.out.println("Error on Building Data");
+        }
+        return data;
+    }
+
+    public ObservableList<DistrictSettlementsController.Attribute> getAllSettlementAttributes() {
+        ObservableList<DistrictSettlementsController.Attribute> data = FXCollections.observableArrayList();
+        try{
+            String SQL = "SELECT co.id, co.nazwa " +
+                    "FROM cecha_osiedla co ";
+            ResultSet rs = c.createStatement().executeQuery(SQL);
+            while(rs.next()){
+                DistrictSettlementsController.Attribute t = new DistrictSettlementsController.Attribute(rs);
+                data.add(t);
+            }
+            rs.close();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            System.out.println("Error on Building Data");
+        }
+        return data;
+    }
+
+    public void setSettlementAttribute(DistrictSettlementsController.Settlement settlement, DistrictSettlementsController.Attribute attribute) {
+        String SQL = "INSERT INTO osiedle_cecha_osiedla " +
+                "values ("+ attribute.getId() +", " + settlement.getId() + ", null)";
+        try {
+            c.createStatement().executeUpdate(SQL);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public ObservableList<CityChooserController.City> getCitiesData() {
+        ObservableList<CityChooserController.City> data = FXCollections.observableArrayList();
+        try{
+            String SQL = "SELECT m.id, m.nazwa, count(*) as Cnt " +
+                    "FROM miasto m, oferta o, nieruchomosc n " +
+                    "WHERE n.miasto_id = m.id " +
+                    "AND o.nieruchomosc_id = n.id " +
+                    "GROUP BY m.id ORDER BY Cnt DESC LIMIT 100";
+            ResultSet rs = c.createStatement().executeQuery(SQL);
+            while(rs.next()){
+                CityChooserController.City t = new CityChooserController.City(rs);
+                data.add(t);
+            }
+            rs.close();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            System.out.println("Error on Building Data");
+        }
+        return data;
+    }
+
+    public ObservableList<DistrictStatsController.DistrictStats> getDistrictStatsData(String cityId) {
+        ObservableList<DistrictStatsController.DistrictStats> data = FXCollections.observableArrayList();
+        try{
+            String SQL = "SELECT d.id, d.nazwa, count(*) as Cnt " +
+                    "FROM dzielnica d, oferta o, nieruchomosc n " +
+                    "WHERE n.dzielnica_id = d.id " +
+                    "AND o.nieruchomosc_id = n.id " +
+                    "AND d.miasto_id = " + cityId +
+                    " GROUP BY d.id ORDER BY Cnt DESC LIMIT 100";
+            ResultSet rs = c.createStatement().executeQuery(SQL);
+            while(rs.next()){
+                DistrictStatsController.DistrictStats t = new DistrictStatsController.DistrictStats(rs);
+                data.add(t);
+            }
+            rs.close();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            System.out.println("Error on Building Data");
+        }
+        return data;
+    }
+
+    public void insertDistrictStats(ObservableList<DistrictStatsController.DistrictStats> items) {
+        for (DistrictStatsController.DistrictStats i: items) {
+            try{
+                String SQL = "INSERT INTO dzielnica_stats " +
+                        "values ("+ i.getId() + ", " + i.getHowMany() + ", now() )";
+                c.createStatement().executeUpdate(SQL);
+            }
+            catch(Exception e){
+                e.printStackTrace();
+                System.out.println("Error on Building Data");
+            }
+        }
     }
 }

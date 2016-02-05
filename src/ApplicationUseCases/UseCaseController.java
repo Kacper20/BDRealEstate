@@ -29,13 +29,16 @@ public class UseCaseController {
 
     UseCaseWorker dbWorker;
     Stage stage;
+
     public void setupStage(Stage stage) throws Exception {
 
         ConnectionManager.getInstance().connect();
         this.stage = stage;
         this.dbWorker = new UseCaseWorker();
         basicSetup(stage);
-    };
+    }
+
+    ;
 
     public void basicSetup(Stage stage) throws Exception {
         Scene scene = new Scene(new Group());
@@ -47,12 +50,13 @@ public class UseCaseController {
         label.setFont(new Font("Arial", 20));
         Button buttonTr = new Button("Agenci-transakcje");
         buttonTr.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
+            @Override
+            public void handle(ActionEvent e) {
                 try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("agents_controller.fxml"));
-                Parent root;
-                    root = (Parent)loader.load();
-                AgentsController tableController = (AgentsController) loader.getController();
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("agents_controller.fxml"));
+                    Parent root;
+                    root = (Parent) loader.load();
+                    AgentsController tableController = (AgentsController) loader.getController();
                     tableController.setupStage(stage, dbWorker);
                 } catch (Exception e1) {
                     e1.printStackTrace();
@@ -62,12 +66,45 @@ public class UseCaseController {
 
         Button buttonOf = new Button("Oferty - zdarzenia");
         buttonOf.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
+            @Override
+            public void handle(ActionEvent e) {
                 try {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("offers_controller.fxml"));
                     Parent root;
-                    root = (Parent)loader.load();
+                    root = (Parent) loader.load();
                     OffersController tableController = (OffersController) loader.getController();
+                    tableController.setupStage(stage, dbWorker);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+
+        Button buttonDs = new Button("Dzielnice - najpopularniejsze");
+        buttonDs.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                try {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("mostfamous_controller.fxml"));
+                    Parent root;
+                    root = (Parent) loader.load();
+                    MostFamousController tableController = (MostFamousController) loader.getController();
+                    tableController.setupStage(stage, dbWorker);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+
+        Button buttonCs = new Button("Miasta - statystyki");
+        buttonCs.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                try {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("citychooser_controller.fxml"));
+                    Parent root;
+                    root = (Parent) loader.load();
+                    CityChooserController tableController = (CityChooserController) loader.getController();
                     tableController.setupStage(stage, dbWorker);
                 } catch (Exception e1) {
                     e1.printStackTrace();
@@ -78,7 +115,7 @@ public class UseCaseController {
         final VBox vbox = new VBox();
         vbox.setSpacing(5);
         vbox.setPadding(new Insets(10, 0, 0, 10));
-        vbox.getChildren().addAll(label, buttonTr, buttonOf);
+        vbox.getChildren().addAll(label, buttonTr, buttonOf, buttonDs, buttonCs);
 
         ((Group) scene.getRoot()).getChildren().addAll(vbox);
 
